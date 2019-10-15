@@ -4,6 +4,7 @@ project(EM_C++)
 include_directories(include/)
 
 set(CMAKE_CXX_FLAGS "-O3")
+SET(CMAKE_BUILD_TYPE Debug)
 
 IF (NOT DEFINED SSE_SUPPORT)
     SET(SSE_SUPPORT 0)
