@@ -1,0 +1,13 @@
+.idea/
+.vscode/
+CMakeCache.txt
+CmakeFiles/
+EM_C++.cbp
+Makefile
+RHEmc
+build/
+cmake-build-debug/
+cmake-build-default/
+cmake_install.cmake
+example/out.txt
+CMakeFiles/
