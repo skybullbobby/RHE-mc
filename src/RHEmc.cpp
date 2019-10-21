@@ -62,11 +62,8 @@ MatrixXdr new_pheno;
 
 
 genotype g;
-genotype g1;
-genotype g2;
 MatrixXdr geno_matrix; //(p,n)
 genotype* Geno;
-int MAX_ITER;
 int k,p,n;
 int k_orig;
 
@@ -96,10 +93,8 @@ bool text_version = false;
 bool use_cov=false; 
 
 
-//// jackknife index wich are computed based on annotation file
 vector<int> len;
 vector<int> Annot;
-int Njack=100;
 int Nbin=8;
 int Nz=10;
 ///////
@@ -904,7 +899,6 @@ int main(int argc, char const *argv[]){
 	MatrixXdr X_l(Nbin+1,Nbin+1);
 	MatrixXdr Y_r(Nbin+1,1);
 	//int bin_index=0;
-	int jack_index=Njack; 
 	MatrixXdr B1;
 	MatrixXdr B2;
 	MatrixXdr C1;
@@ -917,10 +911,8 @@ int main(int argc, char const *argv[]){
 	MatrixXdr enrich_jack;
 	MatrixXdr enrich_point_est;
 
-	jack.resize(Nbin+1,Njack);
 	point_est.resize(Nbin+1,1);
 
-	enrich_jack.resize(Nbin,Njack);
 	enrich_point_est.resize(Nbin,1);
 
 
