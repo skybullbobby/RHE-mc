@@ -17,13 +17,13 @@ class genotype {
 	//std::vector<double> columnmeans2;
 	
 	public:	
-	std::vector<int> columnsum;
+		std::vector<int> columnsum;
         std::vector<int> columnsum2;
         std::vector<double> columnmeans;
         std::vector<double> columnmeans2;
 
 
-	bool read_header;
+		bool read_header;
 		unsigned char mask;
     	int wordsize;
 	    unsigned int unitsperword;

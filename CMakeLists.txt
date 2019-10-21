@@ -16,4 +16,4 @@ IF (NOT DEFINED DEBUG)
 ENDIF()
 ADD_DEFINITIONS(-DDEBUG=${DEBUG})
 
-add_executable(RHEmc src/RHEmc.cpp src/genotype.cpp src/storage.cpp)
+add_executable(cmake-build-debug/RHEmc src/RHEmc.cpp src/genotype.cpp src/storage.cpp)

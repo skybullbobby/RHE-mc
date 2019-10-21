@@ -251,13 +251,13 @@ void genotype::read_fam (string filename){
 
 void genotype::set_metadata() { 
 	wordsize = sizeof(char) * 8;
-	unitsize = 2;
+	unitsize = 2;// in bed files, one DNA base occupies 2 bits
 	unitsperword = wordsize/unitsize;
 	mask = 0;
 	for (int i = 0 ; i < unitsize; i++)
 		mask = mask |(0x1<<i);
     nrow = Nsnp;
-    ncol = ceil(1.0*Nindv/unitsperword);
+    ncol = ceil(1.0*Nindv/unitsperword);// actual number of bytes in the bed file column
 }
 
 
@@ -279,7 +279,7 @@ void genotype::read_bed_mailman (std::istream& ifs,string filename,bool allow_mi
   	char magic[3];
 	set_metadata ();
 
-        gtype =  new unsigned char[ncol];
+    gtype =  new unsigned char[ncol];
 
 	if(read_header)
    		binary_read(ifs,magic);
@@ -317,7 +317,7 @@ void genotype::read_bed_mailman (std::istream& ifs,string filename,bool allow_mi
 			int j0 = k * unitsperword;
 			// Handle number of individuals not being a multiple of 4
 			int lmax = 4;
-			if (k == ncol - 1)  {
+			if (k == ncol - 1)  {// the last byte might contain fewer than 4 bases
 				lmax = Nindv%4;
 				lmax = (lmax==0)?4:lmax;
 			}	

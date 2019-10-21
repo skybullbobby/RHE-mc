@@ -11,3 +11,4 @@ cmake-build-default/
 cmake_install.cmake
 example/out.txt
 CMakeFiles/
+example/
