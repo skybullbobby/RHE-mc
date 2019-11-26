@@ -364,19 +364,13 @@ void multiply_y_post_fast(MatrixXdr &op_orig, int Nrows_op, MatrixXdr &res,bool 
 	int seg_iter;
 	for(seg_iter=0;seg_iter<g.Nsegments_hori-1;seg_iter++){
 		mailman::fastmultiply_pre(g.segment_size_hori,g.Nindv,Ncol_op, seg_iter * g.segment_size_hori, g.p[seg_iter],op,yint_e,partialsums,y_e);
-		for(int n_iter=0; n_iter<n; n_iter++)  {
-			for(int k_iter=0;k_iter<Ncol_op;k_iter++) {
-				res(k_iter,n_iter) += y_e[n_iter][k_iter];
-				y_e[n_iter][k_iter] = 0;
-			}
-		}
 	}
 	int last_seg_size = (g.Nsnp%g.segment_size_hori !=0 ) ? g.Nsnp%g.segment_size_hori : g.segment_size_hori;
 	mailman::fastmultiply_pre(last_seg_size,g.Nindv,Ncol_op, seg_iter * g.segment_size_hori, g.p[seg_iter],op,yint_e,partialsums,y_e);
 
 	for(int n_iter=0; n_iter<n; n_iter++)  {
 		for(int k_iter=0;k_iter<Ncol_op;k_iter++) {
-			res(k_iter,n_iter) += y_e[n_iter][k_iter];
+			res(k_iter,n_iter) = y_e[n_iter][k_iter];
 			y_e[n_iter][k_iter] = 0;
 		}
 	}
@@ -626,7 +620,7 @@ MatrixXdr  compute_XXz (){
             inter_zb(j,k) =inter_zb(j,k) *stds(j,0);
 
     MatrixXdr new_zb = inter_zb.transpose();
-    MatrixXdr new_res = MatrixXd::Constant(Nz, g.Nindv, 0);
+    MatrixXdr new_res(Nz, g.Nindv);
        
     multiply_y_post_fast(new_zb, Nz, new_res, false);
        
