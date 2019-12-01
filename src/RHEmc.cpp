@@ -804,10 +804,10 @@ int main(int argc, char const *argv[]){
 	y_mean = y_sum/mask.sum();
 
 	//if(pheno_norm==true){
-	for(int i=0; i<g.Nindv; i++){
-		if(pheno(i,0)!=0)
-			pheno(i,0) =pheno(i,0) - y_mean; //center phenotype
-	}
+	// for(int i=0; i<g.Nindv; i++){
+	// 	if(pheno(i,0)!=0)
+	// 		pheno(i,0) =pheno(i,0) - y_mean; //center phenotype
+	// }
 	y_sum=pheno.sum();
 
 	//}
@@ -988,6 +988,9 @@ int main(int argc, char const *argv[]){
 	std::ofstream outfile;
 	string add_output=command_line_opts.OUTPUT_FILE_PATH;
 	outfile.open(add_output.c_str(), std::ios_base::app);
+
+	outfile<<"Variance Component Estimate: " << endl;
+	outfile << herit.transpose() << endl;
 
 	outfile<<"Point estimates :"<<endl;
 	outfile<<point_est.transpose()<<endl;
