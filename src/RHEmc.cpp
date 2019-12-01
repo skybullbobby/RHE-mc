@@ -15,6 +15,7 @@
 #include <Eigen/LU>
 #include <Eigen/SVD>
 #include <Eigen/QR>
+#include<Eigen/Sparse>
 #include "time.h"
 
 #include "genotype.h"
@@ -34,6 +35,8 @@
 using namespace Eigen;
 using namespace std;
 
+
+typedef Eigen::Triplet<double> T;
 // Storing in RowMajor Form
 typedef Matrix<double, Dynamic, Dynamic, RowMajor> MatrixXdr;
 //Intermediate Variables
@@ -1002,5 +1005,68 @@ int main(int argc, char const *argv[]){
 //	outfile<<"SEs     :"<<endl;
 //	outfile<<enrich_SEjack.transpose()<<endl;
 
-	return 0;
+
+    //  the rest of the code is testing for generating the estimated fixed effects
+    // assume single variance component
+    // TODO: multi variance component
+
+    SparseMatrix<double, RowMajor> GRMmat(g.Nindv,g.Nindv);
+    std::string GRMfilename = "sparseGRM.mtx";
+    std::string GRMline;
+    std::istringstream in;
+    std::ifstream ifGRM(filename.c_str(), ios::in);
+    string dummyline;
+    // skip the first two lines
+    getline(ifGRM, dummyline);
+    getline(ifGRM, dummyline);
+
+    int xcoord, ycoord;
+    double value;
+
+    std::vector<T> tripletList;
+    tripletList.reserve(4 * g.Nindv); // FIXME: how many to reserve?
+
+    while(getline(ifGRM, GRMline)){
+        in.clear();
+        in.str(GRMline);
+        in >> xcoord >> ycoord >> value;
+        // coordinates in R starts from one
+        xcoord -= 1;
+        ycoord -= 1;
+        tripletList.push_back(T(xcoord,ycoord,value));
+    }
+    GRMmat.setFromTriplets(tripletList.begin(), tripletList.end());
+
+    SparseMatrix<double, RowMajor> VarY(g.Nindv, g.Nindv);
+
+    // FIXME: This indexing only works for single variance component
+    VarY.setIdentity();
+    VarY *= herit(1, 0);
+    VarY += GRMmat * herit(0, 0); // sigma_e ^2 *I + sigma_k^2 * GRM
+
+    MatrixXdr covariate_i (g.Nindv, cov_num + 1); // design matrix with intercept
+    covariate_i << MatrixXdr::Ones(g.Nindv, 1), covariate;
+    
+
+    SimplicialLLT<SparseMatrix<double> > solverW;
+
+    solverW.compute(VarY);
+
+    MatrixXdr X1= solverW.solve(covariate_i); // W^-1 * X
+
+    MatrixXdr X2(cov_num +1, cov_num +1);
+    X2 = covariate_i.transpose() * X1; //X^T * W^-1 * X
+
+    MatrixXdr Y1(g.Nindv, pheno.cols());
+    Y1 = solverW.solve(pheno); // W^-1 * Y
+
+    MatrixXdr Y2(cov_num +1, pheno.cols());
+    Y2 = covariate_i.transpose() * Y1;
+
+    MatrixXdr alpha = X2.colPivHouseholderQr().solve(Y2);
+
+    outfile << "Estimated Fix Effects: "<< endl;
+    outfile << alpha.transpose() << endl;
+
+    return 0;
 }
