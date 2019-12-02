@@ -120,6 +120,9 @@ std::istream& newline(std::istream& in)
     return in.ignore();
 }
 
+// CSV format to output Eigen matrices.
+const static IOFormat CSVFormat(StreamPrecision, DontAlignCols, ", ", "\n");
+
 
 int read_cov(bool std,int Nind, std::string filename, std::string covname){
 	ifstream ifs(filename.c_str(), ios::in); 
@@ -788,6 +791,9 @@ int main(int argc, char const *argv[]){
 
 	/// regress out cov from phenotypes
 
+	// I need the original phenotype for fitting the random effect model later
+	MatrixXdr raw_pheno = pheno;
+
 	if(use_cov==true){
 		MatrixXdr mat_mask=mask.replicate(1,cov_num);
 		covariate=covariate.cwiseProduct(mat_mask);
@@ -1011,7 +1017,7 @@ int main(int argc, char const *argv[]){
     // TODO: multi variance component
 
     SparseMatrix<double, RowMajor> GRMmat(g.Nindv,g.Nindv);
-    std::string GRMfilename = "sparseGRM.mtx";
+    std::string GRMfilename = "sparseGRM.mtx"; // FIXME: Should not hard code GRM directory
     std::string GRMline;
     std::istringstream in;
     std::ifstream ifGRM(filename.c_str(), ios::in);
@@ -1057,16 +1063,29 @@ int main(int argc, char const *argv[]){
     MatrixXdr X2(cov_num +1, cov_num +1);
     X2 = covariate_i.transpose() * X1; //X^T * W^-1 * X
 
-    MatrixXdr Y1(g.Nindv, pheno.cols());
-    Y1 = solverW.solve(pheno); // W^-1 * Y
+    MatrixXdr Y1(g.Nindv, raw_pheno.cols());
+    Y1 = solverW.solve(raw_pheno); // W^-1 * Y
 
-    MatrixXdr Y2(cov_num +1, pheno.cols());
-    Y2 = covariate_i.transpose() * Y1;
+    MatrixXdr Y2(cov_num +1, raw_pheno.cols());
+    Y2 = covariate_i.transpose() * Y1; // X^T * W^-1 * Y
 
     MatrixXdr alpha = X2.colPivHouseholderQr().solve(Y2);
 
     outfile << "Estimated Fix Effects: "<< endl;
     outfile << alpha.transpose() << endl;
+    outfile.close();
+
+    MatrixXdr predicted_pheno = covariate_i * alpha;
+
+    string predicted_dat = "RHEmc_predicted.csv";
+    outfile.open(predicted_dat.c_str(), ios::out);
+    outfile << predicted_pheno.format(CSVFormat);
+    outfile.close();
+
+    string original_pheno = "Original_Pheno.csv";
+    outfile.open(original_pheno.c_str(), ios::out);
+    outfile << raw_pheno.format(CSVFormat);
+    outfile.close();
 
     return 0;
 }
