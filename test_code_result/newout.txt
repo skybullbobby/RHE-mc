@@ -1,0 +1,8 @@
+Variance Component Estimate: 
+0.0651786  0.645466
+Point estimates :
+0.0917175 0.0917175
+Enrichment :
+1
+Estimated Fix Effects: 
+-0.0729236    1.06716  -0.981899
