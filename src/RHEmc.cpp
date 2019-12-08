@@ -1169,7 +1169,6 @@ X_l<<A_trs,b_trk,b_trk.transpose(),Nindv_mask;
 Y_r<<c_yky,yy;
 
 MatrixXdr herit=X_l.colPivHouseholderQr().solve(Y_r);
-
 double temp_sig=0;
 double temp_sum=0;
 
@@ -1208,6 +1207,8 @@ for (int j=0;j<Nbin;j++){
         point_est(j,0)=point_est(j,0)/temp_sum;
         temp_sig+=point_est(j,0);
 }
+cout << "Average random error is: " << endl;
+cout << point_est(Nbin,0)<<endl;
 point_est(Nbin,0)=temp_sig;
 
 
