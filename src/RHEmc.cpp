@@ -1207,8 +1207,7 @@ for (int j=0;j<Nbin;j++){
         point_est(j,0)=point_est(j,0)/temp_sum;
         temp_sig+=point_est(j,0);
 }
-cout << "Average random error is: " << endl;
-cout << point_est(Nbin,0)<<endl;
+double random_error = point_est(Nbin, 0);
 point_est(Nbin,0)=temp_sig;
 
 
@@ -1307,15 +1306,16 @@ cout<<enrich_SEjack.transpose()<<endl;
 string add_output=command_line_opts.OUTPUT_FILE_PATH;
 outfile.open(add_output.c_str(), std::ios_base::app);
 
-outfile<<"Point estimates :"<<endl;
-outfile<<point_est.transpose()<<endl;
-outfile<<"SEs     :"<<endl;
-outfile<<SEjack.transpose()<<endl;
+outfile << point_est(1, 0) << "," << random_error << endl;
+// outfile<<"Point estimates :"<<endl;
+// outfile<<point_est.transpose()<<endl;
+// outfile<<"SEs     :"<<endl;
+// outfile<<SEjack.transpose()<<endl;
       
-outfile<<"Enrichment :"<<endl;
-outfile<<enrich_point_est.transpose()<<endl;
-outfile<<"SEs     :"<<endl;
-outfile<<enrich_SEjack.transpose()<<endl;
+// outfile<<"Enrichment :"<<endl;
+// outfile<<enrich_point_est.transpose()<<endl;
+// outfile<<"SEs     :"<<endl;
+// outfile<<enrich_SEjack.transpose()<<endl;
 
 
 
