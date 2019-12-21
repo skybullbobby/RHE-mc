@@ -1316,7 +1316,7 @@ outfile << point_est(1, 0) << "," << random_error << endl;
 // outfile<<enrich_point_est.transpose()<<endl;
 // outfile<<"SEs     :"<<endl;
 // outfile<<enrich_SEjack.transpose()<<endl;
-
+outfile.close();
 
 
 
