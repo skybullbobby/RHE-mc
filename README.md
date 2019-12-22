@@ -16,6 +16,8 @@ make
 ```
 git clone https://github.com/alipazokit/RHE-mc.git
 cd RHE-mc
+git fetch origin
+git checkout simupheno
 mkdir build
 cd build/
 cmake ..
